@@ -23,7 +23,7 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
           : <a class="btn" aria-disabled="true" href="#download">First release coming soon</a>}
         <a class="btn ghost" href="#demos">See it in action</a>
       </div>
-      <p class="small">Free. Needs Docker Desktop. Windows, macOS, and Linux.</p>
+      <p class="small">Free. Needs Docker Desktop. Windows is the most thoroughly tested; Mac and Linux launchers are included.</p>
     </div>
   </section>
 
@@ -49,7 +49,7 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
           <figure class="demo-item">
             <div class="demo">
               {hasMedia(d.video)
-                ? <video controls muted loop playsinline preload="metadata" poster={hasMedia(d.poster) ? `${base}/demo/${d.poster}` : undefined} src={`${base}/demo/${d.video}`}></video>
+                ? <video controls muted loop playsinline preload="metadata" aria-label={`Demo video: ${d.title}`} poster={hasMedia(d.poster) ? `${base}/demo/${d.poster}` : undefined} src={`${base}/demo/${d.video}`}></video>
                 : <span>Demo video appears with the next release</span>}
             </div>
             <figcaption><strong>{d.title}.</strong> {d.caption}</figcaption>
