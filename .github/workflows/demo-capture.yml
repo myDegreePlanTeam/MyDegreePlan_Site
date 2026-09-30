@@ -1,0 +1,88 @@
+# Records the demo videos against the newest published release, then rebuilds the site.
+#
+# It installs the release exactly like a student would (download zip, run mdp.sh), so a green
+# run also proves a fresh install works. Media is stored on a rolling "demo-media" release in
+# this repo (not in git); site.yml downloads it at build time.
+#
+# Any failure, including the capture script's "a school name is on screen" check, publishes
+# nothing and leaves the previous media in place.
+name: Demo capture
+
+on:
+  repository_dispatch:
+    types: [release-published]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # upload to the demo-media release
+  actions: write    # start the site rebuild afterwards
+
+concurrency:
+  group: demo-capture
+  cancel-in-progress: false
+
+env:
+  DEPLOY_REPO: myDegreePlanTeam/MyDegreePlan_Deploy
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: demo/package-lock.json }
+
+      - name: Download the latest release bundle
+        run: |
+          gh release download --repo "$DEPLOY_REPO" --pattern 'MyDegreePlan-*.zip' --dir "$RUNNER_TEMP"
+          unzip -q "$RUNNER_TEMP"/MyDegreePlan-*.zip -d "$RUNNER_TEMP/install"
+          VERSION=$(basename "$RUNNER_TEMP"/MyDegreePlan-*.zip .zip | sed 's/^MyDegreePlan-//')
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Capturing release $VERSION"
+
+      - name: Start MyDegreePlan (as a student would)
+        working-directory: ${{ runner.temp }}/install/MyDegreePlan
+        run: sh mdp.sh start
+
+      - name: Install the capture tooling
+        working-directory: demo
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      - name: Record the demos
+        working-directory: demo
+        env:
+          BASE_URL: http://127.0.0.1:8080
+          OUT_DIR: ${{ runner.temp }}/media
+        run: node capture.mjs
+
+      - name: Convert to web video
+        working-directory: ${{ runner.temp }}/media
+        run: |
+          for f in *.webm; do
+            ffmpeg -loglevel error -y -i "$f" -c:v libx264 -crf 26 -preset slow -pix_fmt yuv420p -movflags +faststart -an "${f%.webm}.mp4"
+          done
+          rm -f *.webm
+          printf '{"version":"%s","capturedAt":"%s"}\n' "$VERSION" "$(date -u +%FT%TZ)" > demo-meta.json
+          ls -l
+
+      - name: Publish to the demo-media release
+        working-directory: ${{ runner.temp }}/media
+        run: |
+          gh release view demo-media --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create demo-media --repo "$GITHUB_REPOSITORY" --prerelease \
+              --title "Demo media" --notes "Rolling release: the newest demo videos and posters. Replaced automatically by the Demo capture workflow."
+          gh release upload demo-media --repo "$GITHUB_REPOSITORY" --clobber *.mp4 *.jpg demo-meta.json
+
+      - name: Rebuild the site with the new media
+        run: gh workflow run site.yml --repo "$GITHUB_REPOSITORY" --ref main
+
+      - name: Container logs (on failure)
+        if: failure()
+        working-directory: ${{ runner.temp }}/install/MyDegreePlan
+        run: docker compose logs --no-color --tail 80 || true

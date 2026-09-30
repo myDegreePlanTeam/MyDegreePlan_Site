@@ -16,6 +16,14 @@ npm run build      # -> dist/
 
 Demo videos are looked up in `public/demo/` (git-ignored, filled in by CI). Missing files render as placeholders.
 
+## Demo videos
+
+`demo/capture.mjs` (Playwright) signs up throwaway students on a running stack and records the videos and posters. `.github/workflows/demo-capture.yml` runs it after every release: it installs the newest release zip on a runner exactly like a student would, records, converts to MP4 with ffmpeg, and uploads to a rolling `demo-media` release in this repo. `site.yml` downloads that release at build time into `public/demo/` (git-ignored). A failed capture publishes nothing and leaves the previous media in place.
+
+Two safeguards keep the public media school-neutral: the script rewrites `config.js` so the app runs with `brand: 'neutral'`, and after every step it scans the visible page for school names and aborts on a match. That means capture needs a release built from a frontend that includes the neutral-brand code.
+
+To try it locally, point it at a **disposable** stack (it creates accounts): `cd demo && npm ci && npx playwright install chromium && BASE_URL=http://127.0.0.1:8090 DEMO_UNIQUE=1 node capture.mjs`. Output lands in `demo/out/` as `.webm` plus `.jpg` posters.
+
 ## One-time setup
 
 Repo Settings → Pages → Source: **GitHub Actions**.

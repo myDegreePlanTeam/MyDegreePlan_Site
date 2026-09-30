@@ -1,0 +1,7 @@
+{
+  "name": "mydegreeplan-demo-capture",
+  "private": true,
+  "type": "module",
+  "scripts": { "capture": "node capture.mjs" },
+  "dependencies": { "playwright": "^1.50.0" }
+}
