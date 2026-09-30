@@ -78,9 +78,13 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
       <ol class="steps">
         <li><strong>Install Docker Desktop.</strong> <a href="https://www.docker.com/products/docker-desktop">Get it from Docker</a> (free for personal and educational use) and make sure it is running. This is the longest step.</li>
         <li><strong>Download and unzip</strong> the MyDegreePlan folder anywhere, for example in Documents.</li>
-        <li><strong>Start it.</strong> On Windows, double-click <code>mdp.cmd</code>. On Mac or Linux, open a terminal in the folder and run <code>sh mdp.sh start</code>. The first start takes a few minutes, then your browser opens.</li>
+        <li><strong>Start it.</strong> On Windows, double-click <code>mdp.cmd</code>. On Mac or Linux, open a terminal in the folder and run <code>sh mdp.sh start</code>. The first start takes a few minutes, then your browser opens. If Windows says "Windows protected your PC", choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
       </ol>
       <p class="small">Create an account with any email and an 8+ character password. Nothing is emailed or verified. Updates then arrive through an <strong>Update now</strong> button inside the app.</p>
+      <div class="card" style="margin-top:20px">
+        <h3>Coming back later</h3>
+        <p>On Windows, the first start adds a <strong>MyDegreePlan</strong> shortcut to your Desktop. Double-click it and it starts Docker Desktop if needed, then opens the app. You can also bookmark <code>http://localhost:8080</code>: once Docker Desktop is running, the app is already there. Keep the <code>.env</code> file in the folder, because it belongs to your data.</p>
+      </div>
     </div>
   </section>
 
@@ -120,6 +124,7 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
     <div class="wrap">
       <h2>Questions</h2>
       <details><summary>Do I need to be online?</summary><p>Only to download it and to get updates. Planning works fully offline once it is running.</p></details>
+      <details><summary>The launcher says ".env is missing but a database already exists"</summary><p>You started from a folder that doesn't have the original <code>.env</code> file, and this computer already holds a plan. Copy the <code>.env</code> from your original MyDegreePlan folder into this one. Do <strong>not</strong> run <code>mdp wipe</code> unless you want to permanently delete your plan.</p></details>
       <details><summary>What if I forget my password?</summary><p>There is no reset email. Run <code>mdp reset-password your@email</code> from the folder to set a new one.</p></details>
       <details><summary>How do I move to a new computer?</summary><p>Run <code>mdp backup</code> to create a file in <code>backups/</code>, copy that folder and your <code>.env</code> file over, then run <code>mdp restore</code>.</p></details>
       <details><summary>Is this an official registration or advising tool?</summary><p>No. It is a planning aid. Always confirm requirements with your academic advisor.</p></details>
