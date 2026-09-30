@@ -34,7 +34,7 @@ No university names, logos, or school colors on the site.
 
 ## Custom domain (optional)
 
-Buy or pick a domain, then in the repo go to Settings → Pages → Custom domain and enter it. Add the DNS records GitHub lists (a `CNAME` for a subdomain such as `www`, or `A` records for an apex domain), wait for the check to pass, and tick Enforce HTTPS. Then change `SITE_BASE` in `site.yml` to `/` (a custom domain serves from the root; the `configure-pages` step already reports the right values, so usually nothing needs changing) and rebuild.
+Buy or pick a domain, then in the repo go to Settings → Pages → Custom domain and enter it. Add the DNS records GitHub lists (a `CNAME` for a subdomain such as `www`, or `A` records for an apex domain), wait for the check to pass, and tick Enforce HTTPS. No workflow change is needed: the `configure-pages` step reports the new origin and base path, so the next build picks them up. Trigger one from Actions → Site → Run workflow.
 
 ## Social preview image
 
