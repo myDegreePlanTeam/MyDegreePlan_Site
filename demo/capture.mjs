@@ -42,7 +42,10 @@ async function newDemoPage(browser, id) {
     viewport: SIZE,
     recordVideo: { dir, size: SIZE },
     reducedMotion: 'reduce',
+    colorScheme: 'dark', // the app follows the system scheme when it has no saved choice
   })
+  // Pin the app's own saved preference too, so the recording is dark even if that default changes.
+  await context.addInitScript(() => { try { localStorage.setItem('theme', 'dark') } catch { /* private mode */ } })
   const page = await context.newPage()
   page.setDefaultTimeout(20000)
   await page.route('**/config.js', async (route) => {
