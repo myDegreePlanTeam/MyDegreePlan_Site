@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.astro/
+.env
+# fetched at build time from the demo-media release; never committed
+public/demo/

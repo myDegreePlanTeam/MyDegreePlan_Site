@@ -1,0 +1,42 @@
+---
+import '../styles/global.css'
+import data from '../data/releases.json'
+
+const { title = 'MyDegreePlan', description = 'A private degree planner that runs entirely on your own computer.' } = Astro.props
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+const repo = data.repo
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href={`${base}/favicon.svg`} type="image/svg+xml" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <a class="brand" href={`${base}/`}>MyDegreePlan</a>
+        <nav aria-label="Main">
+          <a href={`${base}/#features`}>Features</a>
+          <a href={`${base}/#demos`}>Demos</a>
+          <a href={`${base}/#privacy`}>Privacy</a>
+          <a href={`${base}/#get-started`}>Get started</a>
+          <a href={`${base}/#download`}>Download</a>
+          <a href={`${base}/changelog`}>Changelog</a>
+        </nav>
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="site">
+      <div class="wrap">
+        <p>MyDegreePlan is a prototype degree planner. <a href={`https://github.com/${repo}`}>Releases on GitHub</a>.</p>
+      </div>
+    </footer>
+  </body>
+</html>

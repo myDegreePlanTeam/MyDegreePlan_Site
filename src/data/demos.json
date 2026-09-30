@@ -1,0 +1,5 @@
+[
+  { "id": "build-plan", "title": "Build a four-year plan", "caption": "Pick a concentration and fill each semester; prerequisites are checked as you go.", "video": "build-plan.mp4", "poster": "build-plan.jpg" },
+  { "id": "prior-credit", "title": "Add prior credit", "caption": "AP, IB, and transfer credit remove the courses you have already covered.", "video": "prior-credit.mp4", "poster": "prior-credit.jpg" },
+  { "id": "update", "title": "Update in one click", "caption": "New versions arrive inside the app, with your data backed up first.", "video": "update.mp4", "poster": "update.jpg" }
+]

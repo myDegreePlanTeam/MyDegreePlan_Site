@@ -1,0 +1,128 @@
+---
+import { existsSync } from 'node:fs'
+import Base from '../layouts/Base.astro'
+import data from '../data/releases.json'
+import demos from '../data/demos.json'
+import { humanSize } from '../lib/releases.js'
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '')
+const [latest, ...older] = data.releases
+// Media is fetched into public/demo/ by the workflow; until then a placeholder is shown.
+const hasMedia = (f) => existsSync(new URL(`../../public/demo/${f}`, import.meta.url))
+const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+---
+<Base>
+  <section>
+    <div class="wrap">
+      <p class="eyebrow">Degree planning, kept private</p>
+      <h1>Map your whole degree.<br />Keep your data to yourself.</h1>
+      <p class="lede">MyDegreePlan lays out every semester, checks prerequisites for you, and runs entirely on your own computer, so no one else ever sees your plan.</p>
+      <div class="actions">
+        {latest
+          ? <a class="btn" href={latest.zip.url}>Download v{latest.version}</a>
+          : <a class="btn" aria-disabled="true" href="#download">First release coming soon</a>}
+        <a class="btn ghost" href="#demos">See it in action</a>
+      </div>
+      <p class="small">Free. Needs Docker Desktop. Windows, macOS, and Linux.</p>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>What it does</h2>
+      <div class="grid">
+        <div class="card"><h3>Semester-by-semester grid</h3><p>See every course you still need, laid out across your remaining semesters.</p></div>
+        <div class="card"><h3>Prerequisite checking</h3><p>Get warned when a course is planned before its prerequisites or corequisites are met.</p></div>
+        <div class="card"><h3>Concentrations</h3><p>Core, Cybersecurity, Data Science &amp; AI, and High Performance Computing plans built in.</p></div>
+        <div class="card"><h3>Prior credit wizard</h3><p>Enter AP, IB, and transfer credit; covered courses drop off your plan automatically.</p></div>
+        <div class="card"><h3>Drag and drop</h3><p>Move courses between semesters and see the effect immediately.</p></div>
+        <div class="card"><h3>Progress tracking</h3><p>Mark semesters complete and watch your completion and credit totals update.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="demos">
+    <div class="wrap">
+      <h2>See it in action</h2>
+      <div class="grid">
+        {demos.map((d) => (
+          <figure class="demo-item">
+            <div class="demo">
+              {hasMedia(d.video)
+                ? <video controls muted loop playsinline preload="metadata" poster={hasMedia(d.poster) ? `${base}/demo/${d.poster}` : undefined} src={`${base}/demo/${d.video}`}></video>
+                : <span>Demo video appears with the next release</span>}
+            </div>
+            <figcaption><strong>{d.title}.</strong> {d.caption}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <div class="wrap">
+      <h2>Private by design</h2>
+      <p class="lede">Your plan lives on your own disk. There is no account with us and no server holding your data.</p>
+      <div class="grid">
+        <div class="card"><h3>Only you can open it</h3><p>The app listens on your computer only, not on your Wi-Fi network.</p></div>
+        <div class="card"><h3>No third parties</h3><p>Opening the planner contacts no analytics, fonts, or ad services.</p></div>
+        <div class="card"><h3>One small outbound check</h3><p>To offer updates, the app asks GitHub for a ~1 KB version file. Nothing about you or your plan is sent, and you can turn it off.</p></div>
+      </div>
+      <p class="small">Protect the laptop itself with a login password and disk encryption (BitLocker or FileVault). Backups and the <code>.env</code> file are not encrypted.</p>
+    </div>
+  </section>
+
+  <section id="get-started">
+    <div class="wrap">
+      <h2>Get started in three steps</h2>
+      <ol class="steps">
+        <li><strong>Install Docker Desktop.</strong> <a href="https://www.docker.com/products/docker-desktop">Get it from Docker</a> (free for personal and educational use) and make sure it is running. This is the longest step.</li>
+        <li><strong>Download and unzip</strong> the MyDegreePlan folder anywhere, for example in Documents.</li>
+        <li><strong>Start it.</strong> On Windows, double-click <code>mdp.cmd</code>. On Mac or Linux, open a terminal in the folder and run <code>sh mdp.sh start</code>. The first start takes a few minutes, then your browser opens.</li>
+      </ol>
+      <p class="small">Create an account with any email and an 8+ character password. Nothing is emailed or verified. Updates then arrive through an <strong>Update now</strong> button inside the app.</p>
+    </div>
+  </section>
+
+  <section id="download">
+    <div class="wrap">
+      <h2>Download</h2>
+      {latest ? (
+        <>
+          <p class="lede">Version <strong>{latest.version}</strong> · {date}</p>
+          {latest.required && <p class="note">This release is marked required for existing installs.</p>}
+          <div class="actions"><a class="btn" href={latest.zip.url}>Download MyDegreePlan-{latest.version}.zip ({humanSize(latest.zip.size)})</a></div>
+          {latest.notes && <details open><summary>What's new</summary><p class="notes">{latest.notes}</p></details>}
+          <details>
+            <summary>Verify your download</summary>
+            <dl class="meta">
+              {latest.zip.sha256 && (<><dt>Zip SHA-256</dt><dd><code>{latest.zip.sha256}</code></dd></>)}
+              {latest.composeSha256 && (<><dt>Compose SHA-256</dt><dd><code>{latest.composeSha256}</code></dd></>)}
+            </dl>
+            <p class="small">Windows: <code>Get-FileHash MyDegreePlan-{latest.version}.zip</code>. Mac/Linux: <code>shasum -a 256 MyDegreePlan-{latest.version}.zip</code>. The app also verifies each update's signature before installing it.</p>
+          </details>
+          <details>
+            <summary>Advanced files</summary>
+            <ul>
+              {latest.compose && <li><a href={latest.compose.url}>docker-compose.yml</a> (images pinned by digest)</li>}
+              {latest.manifest && <li><a href={latest.manifest.url}>release.json</a> and {latest.signature && <a href={latest.signature.url}>release.json.sig</a>} (signed manifest)</li>}
+            </ul>
+          </details>
+          {older.length > 0 && <p class="small">Older versions are listed in the <a href={`${base}/changelog`}>changelog</a>.</p>}
+        </>
+      ) : (
+        <p class="lede">The first public release is on its way. Check back soon.</p>
+      )}
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <details><summary>Do I need to be online?</summary><p>Only to download it and to get updates. Planning works fully offline once it is running.</p></details>
+      <details><summary>What if I forget my password?</summary><p>There is no reset email. Run <code>mdp reset-password your@email</code> from the folder to set a new one.</p></details>
+      <details><summary>How do I move to a new computer?</summary><p>Run <code>mdp backup</code> to create a file in <code>backups/</code>, copy that folder and your <code>.env</code> file over, then run <code>mdp restore</code>.</p></details>
+      <details><summary>Is this an official registration or advising tool?</summary><p>No. It is a planning aid. Always confirm requirements with your academic advisor.</p></details>
+    </div>
+  </section>
+</Base>
