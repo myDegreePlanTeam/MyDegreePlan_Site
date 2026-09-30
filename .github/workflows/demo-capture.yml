@@ -45,7 +45,14 @@ jobs:
 
       - name: Start MyDegreePlan (as a student would)
         working-directory: ${{ runner.temp }}/install/MyDegreePlan
-        run: sh mdp.sh start
+        run: |
+          # Releases up to 0.1.1 end `start` by calling `open`, which on Ubuntu is an unrelated
+          # program that fails (fixed in the launcher afterwards). A do-nothing `open` first on
+          # PATH keeps this working for those releases; it is harmless for newer ones.
+          mkdir -p "$RUNNER_TEMP/shim"
+          printf '%s\n' '#!/bin/sh' 'exit 0' > "$RUNNER_TEMP/shim/open"
+          chmod +x "$RUNNER_TEMP/shim/open"
+          PATH="$RUNNER_TEMP/shim:$PATH" sh mdp.sh start
 
       - name: Install the capture tooling
         working-directory: demo
