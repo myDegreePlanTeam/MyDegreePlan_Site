@@ -1,3 +1,9 @@
+# PAUSED. The demo videos are off the website for now because recording them added too long to every release, so this
+# no longer runs after a release (the `repository_dispatch` trigger is removed). It can still be started by hand
+# (Actions -> Demo capture -> Run workflow); the site page and the site build no longer show or fetch the media, so
+# to bring the demos back also restore the demos section in src/pages/index.astro, the nav link in src/layouts/Base.astro
+# and the "Fetch demo media" step in site.yml, and add the release-published trigger back here.
+#
 # Records the demo videos against the newest published release, then rebuilds the site.
 #
 # It installs the release exactly like a student would (download zip, run mdp.sh), so a green
@@ -9,8 +15,6 @@
 name: Demo capture
 
 on:
-  repository_dispatch:
-    types: [release-published]
   workflow_dispatch:
 
 permissions:

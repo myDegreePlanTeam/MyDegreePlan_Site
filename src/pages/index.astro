@@ -1,14 +1,11 @@
 ---
-import { existsSync } from 'node:fs'
 import Base from '../layouts/Base.astro'
 import data from '../data/releases.json'
-import demos from '../data/demos.json'
 import { humanSize } from '../lib/releases.js'
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const [latest, ...older] = data.releases
-// Media is fetched into public/demo/ by the workflow; until then a placeholder is shown.
-const hasMedia = (f) => existsSync(new URL(`../../public/demo/${f}`, import.meta.url))
+// The demo videos are switched off for now (they took too long to rebuild on every release): see README, "Demo videos".
 const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 ---
 <Base>
@@ -21,7 +18,7 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
         {latest
           ? <a class="btn" href={latest.zip.url}>Download v{latest.version}</a>
           : <a class="btn" aria-disabled="true" href="#download">First release coming soon</a>}
-        <a class="btn ghost" href="#demos">See it in action</a>
+        <a class="btn ghost" href="#features">What it does</a>
       </div>
       <p class="small">Free. Needs Docker Desktop. Windows is the most thoroughly tested; Mac and Linux launchers are included.</p>
     </div>
@@ -37,24 +34,6 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
         <div class="card"><h3>Prior credit wizard</h3><p>Enter AP, IB, and transfer credit; covered courses drop off your plan automatically.</p></div>
         <div class="card"><h3>Drag and drop</h3><p>Move courses between semesters and see the effect immediately.</p></div>
         <div class="card"><h3>Progress tracking</h3><p>Mark semesters complete and watch your completion and credit totals update.</p></div>
-      </div>
-    </div>
-  </section>
-
-  <section id="demos">
-    <div class="wrap">
-      <h2>See it in action</h2>
-      <div class="grid">
-        {demos.map((d) => (
-          <figure class="demo-item">
-            <div class="demo">
-              {hasMedia(d.video)
-                ? <video controls muted loop playsinline preload="metadata" aria-label={`Demo video: ${d.title}`} poster={hasMedia(d.poster) ? `${base}/demo/${d.poster}` : undefined} src={`${base}/demo/${d.video}`}></video>
-                : <span>Demo video appears with the next release</span>}
-            </div>
-            <figcaption><strong>{d.title}.</strong> {d.caption}</figcaption>
-          </figure>
-        ))}
       </div>
     </div>
   </section>
