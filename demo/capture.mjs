@@ -80,11 +80,29 @@ async function signUp(page, label) {
   await pw.nth(1).pressSequentially(PASSWORD, { delay: 20 })
   await pause(page, 500)
   await page.click('button[type=submit]')
-  await page.getByText('Incoming Freshman').waitFor()
+  await heading(page, 'What are you studying?').waitFor()
 }
 
 async function onboardingUpToCredits(page, label) {
-  await assertClean(page, `${label}: onboarding 1`)
+  // Step 1 is the program: college, then major, then concentration (a one-college list starts at the majors).
+  await heading(page, 'What are you studying?').waitFor()
+  await assertClean(page, `${label}: program`)
+  await pause(page, 1200)
+  const colleges = page.locator('.program-college')
+  if (await colleges.count()) {
+    await colleges.filter({ hasText: 'Engineering' }).first().click()
+    await pause(page, 700)
+  }
+  await page.locator('.program-major', { hasText: 'Computer Science' }).first().click()
+  await pause(page, 700)
+  await page.locator('.concentration-card', { hasText: 'CSC Core' }).click()
+  await assertClean(page, `${label}: concentration`)
+  await pause(page, 900)
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+
+  // Step 2: the start term, limited to the terms the program has a plan for
+  await heading(page, 'Tell us about yourself').waitFor()
+  await assertClean(page, `${label}: start term`)
   await page.getByText('Incoming Freshman').click()
   await pause(page, 500)
   // The year must be chosen first: it decides which seasons are offered.
@@ -93,16 +111,10 @@ async function onboardingUpToCredits(page, label) {
   await pause(page)
   await page.getByRole('button', { name: 'Continue', exact: true }).click()
 
-  await heading(page, "Choose your concentration").waitFor()
-  await assertClean(page, `${label}: concentration`)
-  await pause(page, 1200)
-  await page.getByText('CSC Core').click()
-  await pause(page, 600)
-  await page.getByRole('button', { name: 'Continue', exact: true }).click()
-
-  await heading(page, "ACT Scores").waitFor()
-  const scores = ['26', '28', '25', '27', '27']
-  for (const [i, s] of scores.entries()) await page.locator('input[type=number]').nth(i).pressSequentially(s, { delay: 60 })
+  await heading(page, 'Test Scores').waitFor()
+  // the fields run Math, English, Science, Reading, Composite (then an optional SAT Math)
+  const scores = ['25', '28', '27', '27', '26']
+  for (const [i, s] of scores.entries()) await page.locator('input.onboarding-input').nth(i).pressSequentially(s, { delay: 60 })
   await pause(page, 600)
   await page.getByRole('button', { name: 'Continue', exact: true }).click()
 
