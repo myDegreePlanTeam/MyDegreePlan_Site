@@ -42,16 +42,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: npm run releases
-      # Demo videos live on a rolling release, written by demo-capture.yml. Missing is fine:
-      # the page shows placeholders until the first successful capture.
-      - name: Fetch demo media
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          mkdir -p public/demo
-          gh release download demo-media --repo "$GITHUB_REPOSITORY" --dir public/demo --clobber \
-            || echo "No demo media yet; the page will show placeholders."
-          ls -l public/demo
+      # The demo videos are switched off (they took too long to rebuild on every release), so there is no media to fetch.
       - name: Build
         env:
           SITE_URL: ${{ steps.pages.outputs.origin }}

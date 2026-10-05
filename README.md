@@ -14,9 +14,11 @@ npm run build      # -> dist/
 
 `.github/workflows/site.yml` rebuilds and deploys on: a `release-published` dispatch from the Deploy repo's Release workflow (not wired up yet), pushes to `main`, a daily cron, or manually. Every build re-reads the releases, so the download button always points at the newest published version. `src/data/releases.json` is generated; do not edit it by hand.
 
-Demo videos are looked up in `public/demo/` (git-ignored, filled in by CI). Missing files render as placeholders.
+## Demo videos (paused)
 
-## Demo videos
+The demo videos are **off the website for now**: recording them added too long to every release. The page has no demos section, the build no longer fetches `demo-media`, and `.github/workflows/demo-capture.yml` no longer runs after a release (it can still be started by hand). `demo/`, `src/data/demos.json` and the styles are kept so it is easy to turn back on: restore the section in `src/pages/index.astro`, the "Demos" link in `src/layouts/Base.astro`, the "Fetch demo media" step in `site.yml`, and the `release-published` trigger in `demo-capture.yml`.
+
+What follows describes the paused setup.
 
 `demo/capture.mjs` (Playwright) signs up throwaway students on a running stack and records the videos and posters. `.github/workflows/demo-capture.yml` runs it after every release: it installs the newest release zip on a runner exactly like a student would, records, converts to MP4 with ffmpeg, and uploads to a rolling `demo-media` release in this repo. `site.yml` downloads that release at build time into `public/demo/` (git-ignored). A failed capture publishes nothing and leaves the previous media in place.
 
