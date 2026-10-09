@@ -7,7 +7,7 @@ function findAsset(assets, matcher) {
   return assets.find((a) => (matcher instanceof RegExp ? matcher.test(a.name) : a.name === matcher)) ?? null
 }
 
-function toAsset(a) {
+export function toAsset(a) {
   if (!a) return null
   return {
     name: a.name,
