@@ -12,7 +12,11 @@ npm run build      # -> dist/
 
 ## How it stays current
 
-`.github/workflows/site.yml` rebuilds and deploys on: a `release-published` dispatch from the Deploy repo's Release workflow (not wired up yet), pushes to `main`, a daily cron, or manually. Every build re-reads the releases, so the download button always points at the newest published version. `src/data/releases.json` is generated; do not edit it by hand.
+`.github/workflows/site.yml` rebuilds and deploys on: a `release-published` dispatch from the Deploy repo's Release workflow (not wired up yet), pushes to `main`, a daily cron, or manually. Every build re-reads the releases, so the download button always points at the newest published version. `src/data/releases.json` (the Docker install, from `MyDegreePlan_Deploy`) and `src/data/desktop.json` (the Windows app, from `MyDegreePlan_Desktop`) are generated; do not edit them by hand.
+
+## Windows installer vs Docker
+
+The page leads with the Windows installer **once `MyDegreePlan_Desktop` has a published release that carries the fixed-name asset `MyDegreePlan-Setup.exe`** (its Release workflow attaches it; the in-app updater reads the versioned `MyDegreePlan-Setup-<version>.exe`). Until then the page, the changelog and the footer are the Docker install's, unchanged. After that the Docker install moves under "Mac, Linux, or you prefer Docker" and the Docker FAQ entries under "Docker install questions"; Docker is the only route for Mac and Linux. A desktop release reaches the site on the next build (the daily cron at the latest, or run the Site workflow by hand); the Desktop workflow does not dispatch to this repo, because that needs a cross-repo token. When the Docker install is retired, delete `DockerGetStarted.astro`, `DockerDownload.astro` and the Docker branches in `index.astro`, `changelog.astro` and `Base.astro`.
 
 ## Demo videos (paused)
 

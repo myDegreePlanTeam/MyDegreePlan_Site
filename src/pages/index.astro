@@ -1,12 +1,16 @@
 ---
 import Base from '../layouts/Base.astro'
+import DockerGetStarted from '../components/DockerGetStarted.astro'
+import DockerDownload from '../components/DockerDownload.astro'
 import data from '../data/releases.json'
+import desktop from '../data/desktop.json'
 import { humanSize } from '../lib/releases.js'
 
-const base = import.meta.env.BASE_URL.replace(/\/$/, '')
 const [latest, ...older] = data.releases
+// The Windows installer leads once a release of it exists; until then the page is the Docker install's, as before.
+const win = desktop.releases[0] ?? null
+const winDate = win && new Date(win.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 // The demo videos are switched off for now (they took too long to rebuild on every release): see README, "Demo videos".
-const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
 ---
 <Base>
   <section>
@@ -15,12 +19,16 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
       <h1>Map your whole degree.<br />Keep your data to yourself.</h1>
       <p class="lede">MyDegreePlan lays out every semester, checks prerequisites for you, and runs entirely on your own computer, so no one else ever sees your plan.</p>
       <div class="actions">
-        {latest
-          ? <a class="btn" href={latest.zip.url}>Download v{latest.version}</a>
-          : <a class="btn" aria-disabled="true" href="#download">First release coming soon</a>}
+        {win
+          ? <a class="btn" href={win.installer.url}>Download for Windows</a>
+          : latest
+            ? <a class="btn" href={latest.zip.url}>Download v{latest.version}</a>
+            : <a class="btn" aria-disabled="true" href="#download">First release coming soon</a>}
         <a class="btn ghost" href="#features">What it does</a>
       </div>
-      <p class="small">Free. Needs Docker Desktop. Windows is the most thoroughly tested; Mac and Linux launchers are included.</p>
+      {win
+        ? <p class="small">Free. Windows 10 or 11, nothing else to install. On Mac or Linux, use the <a href="#download">Docker install</a>.</p>
+        : <p class="small">Free. Needs Docker Desktop. Windows is the most thoroughly tested; Mac and Linux launchers are included.</p>}
     </div>
   </section>
 
@@ -43,58 +51,74 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
       <h2>Private by design</h2>
       <p class="lede">Your plan lives on your own disk. There is no account with us and no server holding your data.</p>
       <div class="grid">
-        <div class="card"><h3>Only you can open it</h3><p>The app listens on your computer only, not on your Wi-Fi network.</p></div>
-        <div class="card"><h3>No third parties</h3><p>Opening the planner contacts no analytics, fonts, or ad services.</p></div>
-        <div class="card"><h3>One small outbound check</h3><p>To offer updates, the app asks GitHub for a ~1 KB version file. Nothing about you or your plan is sent, and you can turn it off.</p></div>
+        {win ? (
+          <>
+            <div class="card"><h3>Only you can open it</h3><p>The app opens its own window and listens on no network port, so nothing on your Wi-Fi can reach it.</p></div>
+            <div class="card"><h3>No third parties</h3><p>Opening the planner contacts no analytics, fonts, or ad services, and the app window is blocked from connecting anywhere else.</p></div>
+            <div class="card"><h3>One small outbound check</h3><p>To offer updates, the app asks GitHub whether a newer version exists. Nothing about you or your plan is sent.</p></div>
+          </>
+        ) : (
+          <>
+            <div class="card"><h3>Only you can open it</h3><p>The app listens on your computer only, not on your Wi-Fi network.</p></div>
+            <div class="card"><h3>No third parties</h3><p>Opening the planner contacts no analytics, fonts, or ad services.</p></div>
+            <div class="card"><h3>One small outbound check</h3><p>To offer updates, the app asks GitHub for a ~1 KB version file. Nothing about you or your plan is sent, and you can turn it off.</p></div>
+          </>
+        )}
       </div>
-      <p class="small">Protect the laptop itself with a login password and disk encryption (BitLocker or FileVault). Backups and the <code>.env</code> file are not encrypted.</p>
+      {win
+        ? <p class="small">Your plan is stored in your Windows user profile. Protect the laptop itself with a login password and disk encryption (BitLocker), and use Export in Settings to keep a backup copy.</p>
+        : <p class="small">Protect the laptop itself with a login password and disk encryption (BitLocker or FileVault). Backups and the <code>.env</code> file are not encrypted.</p>}
     </div>
   </section>
 
   <section id="get-started">
     <div class="wrap">
-      <h2>Get started in three steps</h2>
-      <ol class="steps">
-        <li><strong>Install Docker Desktop.</strong> <a href="https://www.docker.com/products/docker-desktop">Get it from Docker</a> (free for personal and educational use) and make sure it is running. This is the longest step.</li>
-        <li><strong>Download and unzip</strong> the MyDegreePlan folder anywhere, for example in Documents.</li>
-        <li><strong>Start it.</strong> On Windows, double-click <code>mdp.cmd</code>. On Mac or Linux, open a terminal in the folder and run <code>sh mdp.sh start</code>. The first start takes a few minutes, then your browser opens. If Windows says "Windows protected your PC", choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
-      </ol>
-      <p class="small">Create an account with any email and an 8+ character password. Nothing is emailed or verified. Updates then arrive through an <strong>Update now</strong> button inside the app.</p>
-      <div class="card" style="margin-top:20px">
-        <h3>Coming back later</h3>
-        <p>On Windows, the first start adds a <strong>MyDegreePlan</strong> shortcut to your Desktop. Double-click it and it starts Docker Desktop if needed, then opens the app. You can also bookmark <code>http://localhost:8080</code>: once Docker Desktop is running, the app is already there. Keep the <code>.env</code> file in the folder, because it belongs to your data.</p>
-      </div>
+      {win ? (
+        <>
+          <h2>Get started in three steps</h2>
+          <ol class="steps">
+            <li><strong>Download the installer.</strong> <a href={win.installer.url}>MyDegreePlan-Setup.exe</a> ({humanSize(win.installer.size)}).</li>
+            <li><strong>Run it.</strong> It installs for your account only and needs no administrator rights. If Windows says "Windows protected your PC", that is because the installer is not code-signed yet: choose <strong>More info</strong>, then <strong>Run anyway</strong>.</li>
+            <li><strong>Open MyDegreePlan.</strong> It starts when the install finishes, and later from the Start menu. Choose your program and start planning. There is no account to create.</li>
+          </ol>
+          <p class="small">New versions arrive through a card inside the app. You choose when to download and when to restart, and your plan is kept.</p>
+          <details style="margin-top:20px">
+            <summary>Mac, Linux, or you prefer Docker</summary>
+            <p class="small">The Docker install runs the same planner in containers. It is the way to use MyDegreePlan on Mac and Linux.</p>
+            <DockerGetStarted />
+          </details>
+        </>
+      ) : (
+        <>
+          <h2>Get started in three steps</h2>
+          <DockerGetStarted />
+        </>
+      )}
     </div>
   </section>
 
   <section id="download">
     <div class="wrap">
       <h2>Download</h2>
-      {latest ? (
+      {win ? (
         <>
-          <p class="lede">Version <strong>{latest.version}</strong> · {date}</p>
-          {latest.required && <p class="note">This release is marked required for existing installs.</p>}
-          <div class="actions"><a class="btn" href={latest.zip.url}>Download MyDegreePlan-{latest.version}.zip ({humanSize(latest.zip.size)})</a></div>
-          {latest.notes && <details open><summary>What's new</summary><p class="notes">{latest.notes}</p></details>}
+          <p class="lede">Version <strong>{win.version}</strong> · {winDate}</p>
+          <div class="actions"><a class="btn" href={win.installer.url}>Download MyDegreePlan-Setup.exe ({humanSize(win.installer.size)})</a></div>
+          <p class="small">Windows 10 or 11, 64-bit.</p>
+          {win.notes && <details open><summary>What's new</summary><p class="notes">{win.notes}</p></details>}
           <details>
             <summary>Verify your download</summary>
-            <dl class="meta">
-              {latest.zip.sha256 && (<><dt>Zip SHA-256</dt><dd><code>{latest.zip.sha256}</code></dd></>)}
-              {latest.composeSha256 && (<><dt>Compose SHA-256</dt><dd><code>{latest.composeSha256}</code></dd></>)}
-            </dl>
-            <p class="small">Windows: <code>Get-FileHash MyDegreePlan-{latest.version}.zip</code>. Mac/Linux: <code>shasum -a 256 MyDegreePlan-{latest.version}.zip</code>. The app also verifies each update's signature before installing it.</p>
+            {win.installer.sha256 && <dl class="meta"><dt>SHA-256</dt><dd><code>{win.installer.sha256}</code></dd></dl>}
+            <p class="small">In PowerShell: <code>Get-FileHash MyDegreePlan-Setup.exe</code>. The installer is not code-signed yet, so this checks that the file you got is the one published.</p>
           </details>
-          <details>
-            <summary>Advanced files</summary>
-            <ul>
-              {latest.compose && <li><a href={latest.compose.url}>docker-compose.yml</a> (images pinned by digest)</li>}
-              {latest.manifest && <li><a href={latest.manifest.url}>release.json</a> and {latest.signature && <a href={latest.signature.url}>release.json.sig</a>} (signed manifest)</li>}
-            </ul>
+          <p class="small">Older versions are listed in the <a href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/changelog`}>changelog</a>.</p>
+          <details style="margin-top:20px">
+            <summary>Mac, Linux, or the Docker install</summary>
+            <DockerDownload latest={latest} olderCount={older.length} />
           </details>
-          {older.length > 0 && <p class="small">Older versions are listed in the <a href={`${base}/changelog`}>changelog</a>.</p>}
         </>
       ) : (
-        <p class="lede">The first public release is on its way. Check back soon.</p>
+        <DockerDownload latest={latest} olderCount={older.length} />
       )}
     </div>
   </section>
@@ -103,9 +127,27 @@ const date = latest && new Date(latest.publishedAt).toLocaleDateString('en-US', 
     <div class="wrap">
       <h2>Questions</h2>
       <details><summary>Do I need to be online?</summary><p>Only to download it and to get updates. Planning works fully offline once it is running.</p></details>
-      <details><summary>The launcher says ".env is missing but a database already exists"</summary><p>You started from a folder that doesn't have the original <code>.env</code> file, and this computer already holds a plan. Copy the <code>.env</code> from your original MyDegreePlan folder into this one. Do <strong>not</strong> run <code>mdp wipe</code> unless you want to permanently delete your plan.</p></details>
-      <details><summary>What if I forget my password?</summary><p>There is no reset email. Run <code>mdp reset-password your@email</code> from the folder to set a new one.</p></details>
-      <details><summary>How do I move to a new computer?</summary><p>Run <code>mdp backup</code> to create a file in <code>backups/</code>, copy that folder and your <code>.env</code> file over, then run <code>mdp restore</code>.</p></details>
+      {win && (
+        <>
+          <details><summary>Why does Windows warn me when I run the installer?</summary><p>The installer is not code-signed yet, so Windows SmartScreen does not recognize the publisher. Choose <strong>More info</strong>, then <strong>Run anyway</strong>. You can compare the file's SHA-256 with the one listed under Download first.</p></details>
+          <details><summary>How do I move to a new computer?</summary><p>In the app, open Settings and choose <strong>Export</strong> to save a backup file. On the new computer, install MyDegreePlan and choose <strong>Import</strong> on the first screen, or in Settings.</p></details>
+          <details><summary>How do I uninstall it?</summary><p>Windows Settings, then Apps, then MyDegreePlan, then Uninstall. Your plan is kept so a reinstall finds it. To remove it too, choose <strong>Erase</strong> in the app's Settings before you uninstall.</p></details>
+        </>
+      )}
+      {win ? (
+        <details>
+          <summary>Docker install questions</summary>
+          <details><summary>The launcher says ".env is missing but a database already exists"</summary><p>You started from a folder that doesn't have the original <code>.env</code> file, and this computer already holds a plan. Copy the <code>.env</code> from your original MyDegreePlan folder into this one. Do <strong>not</strong> run <code>mdp wipe</code> unless you want to permanently delete your plan.</p></details>
+          <details><summary>What if I forget my password?</summary><p>There is no reset email. Run <code>mdp reset-password your@email</code> from the folder to set a new one.</p></details>
+          <details><summary>How do I move to a new computer?</summary><p>Run <code>mdp backup</code> to create a file in <code>backups/</code>, copy that folder and your <code>.env</code> file over, then run <code>mdp restore</code>.</p></details>
+        </details>
+      ) : (
+        <>
+          <details><summary>The launcher says ".env is missing but a database already exists"</summary><p>You started from a folder that doesn't have the original <code>.env</code> file, and this computer already holds a plan. Copy the <code>.env</code> from your original MyDegreePlan folder into this one. Do <strong>not</strong> run <code>mdp wipe</code> unless you want to permanently delete your plan.</p></details>
+          <details><summary>What if I forget my password?</summary><p>There is no reset email. Run <code>mdp reset-password your@email</code> from the folder to set a new one.</p></details>
+          <details><summary>How do I move to a new computer?</summary><p>Run <code>mdp backup</code> to create a file in <code>backups/</code>, copy that folder and your <code>.env</code> file over, then run <code>mdp restore</code>.</p></details>
+        </>
+      )}
       <details><summary>Is this an official registration or advising tool?</summary><p>No. It is a planning aid. Always confirm requirements with your academic advisor.</p></details>
     </div>
   </section>

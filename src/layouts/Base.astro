@@ -1,10 +1,12 @@
 ---
 import '../styles/global.css'
 import data from '../data/releases.json'
+import desktop from '../data/desktop.json'
 
 const { title = 'MyDegreePlan', description = 'A private degree planner that runs entirely on your own computer.' } = Astro.props
 const base = import.meta.env.BASE_URL.replace(/\/$/, '')
-const repo = data.repo
+// The footer links to wherever the newest installer lives: the Windows app's repo once it has a release.
+const repo = desktop.releases.length > 0 ? desktop.repo : data.repo
 // Social previews need absolute URLs; Astro.site comes from SITE_URL (set by the Pages workflow).
 const abs = (path) => new URL(`${base}${path}`, Astro.site).href
 const canonical = new URL(Astro.url.pathname, Astro.site).href

@@ -1,17 +1,33 @@
 ---
 import Base from '../layouts/Base.astro'
 import data from '../data/releases.json'
+import desktop from '../data/desktop.json'
 import { humanSize } from '../lib/releases.js'
 
 const fmt = (iso) => new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })
+// With no Windows releases yet the page is the Docker install's list alone, as before.
+const hasDesktop = desktop.releases.length > 0
 ---
 <Base title="Changelog · MyDegreePlan" description="Every MyDegreePlan release and what changed.">
   <section>
     <div class="wrap">
       <h1>Changelog</h1>
+      {hasDesktop && (
+        <>
+          <h2>Windows app</h2>
+          {desktop.releases.map((r) => (
+            <details open={r === desktop.releases[0]}>
+              <summary>v{r.version} · {fmt(r.publishedAt)}</summary>
+              {r.notes && <p class="notes">{r.notes}</p>}
+              <p><a href={r.installer.url}>Download MyDegreePlan-Setup.exe</a> ({humanSize(r.installer.size)})</p>
+            </details>
+          ))}
+          <h2>Docker install</h2>
+        </>
+      )}
       {data.releases.length === 0 && <p class="lede">No releases yet.</p>}
       {data.releases.map((r) => (
-        <details open={r === data.releases[0]}>
+        <details open={!hasDesktop && r === data.releases[0]}>
           <summary>v{r.version} · {fmt(r.publishedAt)}{r.required ? ' · required' : ''}</summary>
           {r.notes && <p class="notes">{r.notes}</p>}
           <p><a href={r.zip.url}>Download MyDegreePlan-{r.version}.zip</a> ({humanSize(r.zip.size)})</p>
