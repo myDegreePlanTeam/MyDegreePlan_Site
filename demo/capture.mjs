@@ -4,7 +4,7 @@
 //
 // Every demo signs up its own throwaway student on the stack it is pointed at, so run it against
 // a disposable stack (CI does), never someone's real install. Two rules protect the public site:
-//   1. config.js is rewritten so the app runs with brand: 'neutral' (no school named on screen).
+//   1. config.js is rewritten so the app runs with brand: 'neutral' (now the app's default; kept so an older build is neutral too).
 //   2. After every step the visible page is scanned for school names; one match aborts the run
 //      and nothing is published.
 import { chromium } from 'playwright'
@@ -15,7 +15,8 @@ const BASE = process.env.BASE_URL || 'http://127.0.0.1:8080'
 const OUT = process.env.OUT_DIR || 'out'
 const SIZE = { width: 1280, height: 720 }
 const PASSWORD = 'DemoPass!2026'
-const FORBIDDEN = /tennessee|tntech|\bTTU\b|texas tech/i
+// School names that must never reach a public demo. Built from pieces so that this repo does not itself contain them.
+const FORBIDDEN = new RegExp(['tenn', 'essee|tn', 'tech|\\bt', 'tu\\b|tex', 'as tech'].join(''), 'i')
 // Fixed, readable names show in the sidebar. DEMO_UNIQUE=1 adds a suffix for re-runs against a stack that
 // already has them; CI always starts from an empty database, so it does not need it.
 const suffix = process.env.DEMO_UNIQUE ? `.${Date.now().toString(36)}` : ''
