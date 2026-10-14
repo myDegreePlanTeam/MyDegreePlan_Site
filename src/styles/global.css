@@ -1,38 +1,51 @@
+/* The app's own faces, self-hosted (licenses in src/assets/fonts/licenses). Latin subset; a missing glyph falls back to the system face. */
+@font-face { font-family: 'Atkinson Hyperlegible'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/AtkinsonHyperlegible-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Atkinson Hyperlegible'; font-style: normal; font-weight: 700; font-display: swap; src: url('../assets/fonts/AtkinsonHyperlegible-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'Atkinson Hyperlegible'; font-style: italic; font-weight: 400; font-display: swap; src: url('../assets/fonts/AtkinsonHyperlegible-Italic.woff2') format('woff2'); }
+@font-face { font-family: 'DM Serif Display'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/DMSerifDisplay-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 400; font-display: swap; src: url('../assets/fonts/DMMono-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'DM Mono'; font-style: normal; font-weight: 500; font-display: swap; src: url('../assets/fonts/DMMono-Medium.woff2') format('woff2'); }
+
+/* The colors are the app's design tokens (the app's src/index.css, light and dark), so the site and the app read as one product:
+   --bg page, --surface surface, --ink text, --muted text-2, --line hairline, --accent primary, --accent-soft tint, --warn attention. */
 :root {
-  --bg: #fbfaf7;
-  --surface: #ffffff;
-  --ink: #1a2321;
-  --muted: #55625f;
-  --line: #e2e0d8;
-  --accent: #0f766e;
-  --accent-ink: #ffffff;
-  --accent-soft: #e3f2f0;
-  --warn-bg: #fff4dd;
-  --warn-ink: #6b4a00;
+  --bg: #F6F5FA;
+  --surface: #FFFFFF;
+  --ink: #1D1830;
+  --muted: #4A4563;
+  --line: #CFC9E0;
+  --accent: #5A3FA6;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #EEEBF8;
+  --focus: #3B2A8C;
+  --warn-bg: #FFF1CC;
+  --warn-ink: #7A4F00;
   --radius: 14px;
   --max: 1080px;
-  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font: 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --display: 'DM Serif Display', Georgia, 'Times New Roman', serif;
+  --mono: 'DM Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #101615;
-    --surface: #182120;
-    --ink: #eaf1ef;
-    --muted: #9fb0ac;
-    --line: #2a3634;
-    --accent: #3ec5b6;
-    --accent-ink: #062622;
-    --accent-soft: #163330;
-    --warn-bg: #3a2e12;
-    --warn-ink: #f3d68a;
+    --bg: #14111F;
+    --surface: #1D1930;
+    --ink: #EFEDF8;
+    --muted: #C2BDD9;
+    --line: #4A4466;
+    --accent: #B9A2FF;
+    --accent-ink: #17102E;
+    --accent-soft: #2A2547;
+    --focus: #E3D8FF;
+    --warn-bg: #3A2D0D;
+    --warn-ink: #F4C766;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #101615; --surface: #182120; --ink: #eaf1ef; --muted: #9fb0ac; --line: #2a3634;
-  --accent: #3ec5b6; --accent-ink: #062622; --accent-soft: #163330; --warn-bg: #3a2e12; --warn-ink: #f3d68a;
+  --bg: #14111F; --surface: #1D1930; --ink: #EFEDF8; --muted: #C2BDD9; --line: #4A4466;
+  --accent: #B9A2FF; --accent-ink: #17102E; --accent-soft: #2A2547; --focus: #E3D8FF; --warn-bg: #3A2D0D; --warn-ink: #F4C766;
 }
 
 * { box-sizing: border-box; }
@@ -42,7 +55,7 @@ a { color: var(--accent); }
 img, video { max-width: 100%; height: auto; display: block; }
 code, pre { font-family: var(--mono); font-size: 0.9em; }
 pre { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; overflow-x: auto; }
-:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
 .skip { position: absolute; left: 16px; top: -60px; z-index: 10; background: var(--accent); color: var(--accent-ink); padding: 10px 16px; border-radius: 0 0 10px 10px; font-weight: 700; }
 .skip:focus { top: 0; }
@@ -53,7 +66,9 @@ main:focus { outline: none; }
 section { padding: 56px 0; }
 section + section { border-top: 1px solid var(--line); }
 h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
-h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); letter-spacing: -0.02em; }
+/* The serif is for page and section titles only, as in the app; it has one weight. */
+h1, h2 { font-family: var(--display); font-weight: 400; }
+h1 { font-size: clamp(2.2rem, 6vw, 3.6rem); letter-spacing: -0.01em; }
 h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); }
 .lede { font-size: 1.2rem; color: var(--muted); max-width: 40rem; }
 .eyebrow { text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; color: var(--accent); font-weight: 700; margin: 0 0 8px; }
