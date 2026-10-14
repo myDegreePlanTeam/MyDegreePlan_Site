@@ -1,1 +1,33 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0f766e"/><path d="M8 9h7v6H8zM17 9h7v6h-7zM8 17h7v6H8zM17 17h7v6h-7z" fill="#fff" opacity=".92"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="64" height="64">
+  <!-- MyDegreePlan: the app's semester grid, three columns of course cards rising to a gold card. Same design as the desktop
+       app icon (MyDegreePlan_Desktop/build-resources/icon.svg) without the text lines, which are invisible at tab size.
+       No institution name or mark. An XML comment must not contain a double hyphen. -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3A2566"/>
+      <stop offset="1" stop-color="#15092A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F8BF54"/>
+      <stop offset="1" stop-color="#F3A51C"/>
+    </linearGradient>
+  </defs>
+  <rect x="24" y="24" width="976" height="976" rx="220" fill="url(#tile)"/>
+  <g transform="translate(512 512) scale(1.18) translate(-512 -512)">
+    <g fill="#EDE6FF" fill-opacity="0.55">
+      <rect x="204" y="686" width="176" height="120" rx="32"/>
+      <rect x="204" y="530" width="176" height="120" rx="32"/>
+    </g>
+    <g fill="#EDE6FF" fill-opacity="0.78">
+      <rect x="424" y="686" width="176" height="120" rx="32"/>
+      <rect x="424" y="530" width="176" height="120" rx="32"/>
+      <rect x="424" y="374" width="176" height="120" rx="32"/>
+    </g>
+    <g fill="#EDE6FF" fill-opacity="0.96">
+      <rect x="644" y="686" width="176" height="120" rx="32"/>
+      <rect x="644" y="530" width="176" height="120" rx="32"/>
+      <rect x="644" y="374" width="176" height="120" rx="32"/>
+    </g>
+    <rect x="644" y="218" width="176" height="120" rx="32" fill="url(#gold)"/>
+  </g>
+</svg>

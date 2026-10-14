@@ -5,14 +5,15 @@ import { fileURLToPath } from 'node:url'
 
 const html = `<!doctype html><meta charset="utf-8"><style>
   * { box-sizing: border-box; margin: 0 }
-  body { width: 1200px; height: 630px; background: #0f766e; color: #fff; font-family: 'Segoe UI', system-ui, sans-serif;
+  body { width: 1200px; height: 630px; background: linear-gradient(#3A2566, #15092A); color: #fff; font-family: 'Segoe UI', system-ui, sans-serif;
          display: flex; flex-direction: column; justify-content: center; padding: 0 90px; position: relative; overflow: hidden }
-  .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: 26px; font-weight: 700; color: #b7ece6; margin-bottom: 22px }
+  .eyebrow { text-transform: uppercase; letter-spacing: .14em; font-size: 26px; font-weight: 700; color: #F8BF54; margin-bottom: 22px }
   h1 { font-size: 84px; line-height: 1.05; letter-spacing: -0.02em; max-width: 800px }
-  p { font-size: 32px; margin-top: 28px; color: #d8f3ef; max-width: 720px; line-height: 1.35 }
+  p { font-size: 32px; margin-top: 28px; color: #DDD5F5; max-width: 720px; line-height: 1.35 }
   .grid { position: absolute; right: -40px; top: 70px; display: grid; grid-template-columns: repeat(2, 150px); gap: 22px; transform: rotate(-6deg) }
   .grid div { height: 150px; border-radius: 22px; background: rgba(255,255,255,.14); border: 2px solid rgba(255,255,255,.3) }
   .grid div:nth-child(2), .grid div:nth-child(3) { background: rgba(255,255,255,.26) }
+  .grid div:nth-child(2) { background: #F3A51C; border-color: #F8BF54 }
 </style>
 <div class="grid"><div></div><div></div><div></div><div></div></div>
 <div class="eyebrow">MyDegreePlan</div>

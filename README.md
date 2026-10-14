@@ -36,7 +36,9 @@ Repo Settings → Pages → Source: **GitHub Actions**.
 
 ## Branding rule
 
-No university names, logos, or school colors on the site.
+No university names or logos on the site (`tests/institutionName.test.js`). The colors, fonts and icon are the app's own, so the site and the
+app read as one product: the color tokens in `src/styles/global.css` mirror the app's design tokens (light and dark), the fonts in
+`src/assets/fonts` are the app's self-hosted faces, and `public/favicon.svg` is the app's icon. When the app's tokens change, change them here too.
 
 ## Custom domain (optional)
 
